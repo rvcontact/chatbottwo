@@ -14,7 +14,7 @@ const client = new PredictionServiceClient();
 
 // In vertex-ai.js
 const projectId = process.env.PROJECT_ID;
-const location = 'us-central1';
+const location = 'us-east4';
 const endpointId = process.env.ENDPOINT_ID;
 const endpointName = `projects/${projectId}/locations/${location}/endpoints/${endpointId}`;
 
