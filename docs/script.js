@@ -323,7 +323,7 @@ const chatbotJS = () => {
 
   const generateResponse = (li, message) => {
     //const API_URL = "https://chatbotone.onrender.com" + "/api/chat";
-    const API_URL = "https://gemini-chatbot-service-551924449204.us-central1.run.app";
+    const API_URL = "https://gemini-chatbot-service-551924449204.us-central1.run.app" + "/api/chat";
     const messageElement = li.querySelector("p");
 
     const requestOptions = {
