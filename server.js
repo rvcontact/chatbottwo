@@ -1,5 +1,4 @@
 const express = require("express");
-const session = require("express-session");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const cors = require("cors");
@@ -13,14 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 
 app.use(bodyParser.json());
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET_KEY || "default_secret_key",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: process.env.NODE_ENV === "production" },
-  })
-);
+
 
 app.use(cors());
 
