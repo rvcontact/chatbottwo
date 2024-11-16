@@ -32,13 +32,20 @@ const getMessage = async (req, res) => {
     const [response] = await client.predict(request);
 
     const predictions = response.predictions;
+    if (!predictions || !predictions[0] || !predictions[0].content) {
+      throw new Error('Invalid response from Vertex AI.');
+    }
     const reply = predictions[0].content;
+    
 
     res.json({ reply });
-  } catch (error) {
-    console.error('Error during Vertex AI prediction:', error);
+  } 
+  catch (error) {
+    console.error('Error during Vertex AI prediction:', error.message);
+    console.error(error.stack);
     res.status(500).json({ error: 'An error occurred while processing your request.' });
   }
+  
 };
 
 module.exports = getMessage;
