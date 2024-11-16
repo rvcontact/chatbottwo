@@ -331,15 +331,16 @@ const chatbotJS = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ messages: [{ content: message }] }),
     };
 
     // Send POST request to API
     fetch(API_URL, requestOptions)
       .then((res) => res.json())
       .then((data) => {
-        messageElement.textContent = data.message;
+        messageElement.textContent = data.reply;
       })
+      
       .catch((err) => {
         messageElement.classList.add("error");
         messageElement.textContent = "Something went wrong. Try again later.";
