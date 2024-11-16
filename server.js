@@ -9,8 +9,8 @@ const getMessage = require("./controllers/chat.js");
 
 const app = express();
 
-// Use Render's PORT or fallback to 5000
-const PORT = process.env.PORT || 5000;
+// Use GCR's PORT or fallback to 8080
+const PORT = process.env.PORT || 8080;
 
 app.use(bodyParser.json());
 app.use(
