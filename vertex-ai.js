@@ -1,26 +1,18 @@
 // vertex-ai.js
-const { PredictionServiceClient } = require('@google-cloud/aiplatform').v1;
-const { helpers } = require('@google-cloud/aiplatform');
-const dotenv = require('dotenv');
-dotenv.config();
+const { PredictionServiceClient } = require('@google-cloud/aiplatform');
 
-const { endpointPath } = helpers;
+// Create a new client instance
+const client = new PredictionServiceClient();
 
-const clientOptions = {
-  apiEndpoint: 'us-central1-aiplatform.googleapis.com',
-};
+// Retrieve environment variables
+const projectId = process.env.PROJECT_ID;
+const location = 'us-central1';
+const endpointId = process.env.ENDPOINT_ID;
 
-const client = new PredictionServiceClient(clientOptions);
+// Manually construct the endpoint name
+const endpointName = `projects/${projectId}/locations/${location}/endpoints/${endpointId}`;
 
-// Define your project ID, location, and endpoint ID
-const projectId = process.env.PROJECT_ID || 'your-project-id'; // Replace 'your-project-id' with your actual project ID
-const location = 'us-central1'; // Ensure this matches your endpoint's location
-const endpointId = '147796353005649920';
-
-// Construct the full endpoint resource name
-const endpointName = client.endpointPath(projectId, location, endpointId);
-
-// Export the client and endpointName
+// Export the client and the endpoint name
 module.exports = {
   client,
   endpointName,

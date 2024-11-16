@@ -1,22 +1,14 @@
 // controllers/chat.js
-const client = require('../vertex-ai');
-const { endpointPath } = require('@google-cloud/aiplatform').helpers;
+const { client, endpointName } = require('../vertex-ai');
 
 const getMessage = async (req, res) => {
   try {
     const messages = req.body.messages || [];
     const lastMessage = messages[messages.length - 1];
-    
+
     if (!lastMessage || !lastMessage.content) {
       return res.status(400).json({ error: 'No messages provided.' });
     }
-    
-
-    const project = process.env.PROJECT_ID;
-    const location = 'us-central1'; // Update if necessary
-    const endpointId = process.env.ENDPOINT_ID;
-
-    const endpoint = endpointPath(project, location, endpointId);
 
     const instances = [
       {
@@ -32,7 +24,7 @@ const getMessage = async (req, res) => {
     };
 
     const request = {
-      endpoint,
+      endpoint: endpointName,
       instances,
       parameters,
     };
@@ -41,13 +33,7 @@ const getMessage = async (req, res) => {
 
     const predictions = response.predictions;
     const reply = predictions[0].content;
-    console.log('Received request:', req.body);
 
-    // After setting up variables
-    console.log('Project ID:', project);
-    console.log('Endpoint ID:', endpointId);
-    console.log('Endpoint:', endpoint);
-    
     res.json({ reply });
   } catch (error) {
     console.error('Error during Vertex AI prediction:', error);
