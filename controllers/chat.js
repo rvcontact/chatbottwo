@@ -1,49 +1,47 @@
-const openai = require("../config/open-ai.js");
-const NodeCache = require("node-cache");
+// controllers/chat.js
+const client = require('../vertex-ai');
+const { endpointPath } = require('@google-cloud/aiplatform').helpers;
 
-const chatHistoryCache = new NodeCache({ stdTTL: 3600, checkperiod: 600 });
-async function getMessage(req, res) {
-  const userId = req.sessionID; // Use session ID or another unique identifier for each user
-  const userInput = req.body.message;
-
+const getMessage = async (req, res) => {
   try {
-    //history
-    // Construct messages by iterating over the history
-    let chatHistory = chatHistoryCache.get(userId) || [];
+    const messages = req.body.messages || [];
+    const lastMessage = messages[messages.length - 1];
 
-    // Add latest user input
-    chatHistory.push({ role: "user", content: userInput });
+    const project = process.env.PROJECT_ID;
+    const location = 'us-central1'; // Update if necessary
+    const endpointId = process.env.ENDPOINT_ID;
 
-    // Call the API with the user input
-    const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: chatHistory,
-      //messages: [{ role: "user", content: userInput }],
-    });
+    const endpoint = endpointPath(project, location, endpointId);
 
-    const completionText = completion.choices[0].message.content;
+    const instances = [
+      {
+        content: lastMessage.content,
+      },
+    ];
 
-    // Add the assistant's response to the chat history
-    chatHistory.push({ role: "assistant", content: completionText });
+    const parameters = {
+      temperature: 0.5,
+      maxOutputTokens: 256,
+      topP: 0.8,
+      topK: 40,
+    };
 
-    // Store the updated chat history in the cache
-    chatHistoryCache.set(userId, chatHistory);
+    const request = {
+      endpoint,
+      instances,
+      parameters,
+    };
 
-    // If user wants to exit, handle it appropriately
-    if (userInput.toLowerCase() === "exit") {
-      chatHistoryCache.del(userId);
-      res.send({ message: completionText });
-      return;
-    }
+    const [response] = await client.predict(request);
 
-    // Return the assistant's response
-    res.send({ message: completionText });
+    const predictions = response.predictions;
+    const reply = predictions[0].content;
+
+    res.json({ reply });
   } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .send({ error: "An error occurred while processing your request." });
+    console.error('Error during Vertex AI prediction:', error);
+    res.status(500).json({ error: 'An error occurred while processing your request.' });
   }
-}
+};
 
 module.exports = getMessage;
